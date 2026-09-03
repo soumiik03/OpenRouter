@@ -64,3 +64,4 @@ export async function profile(req: Request, res: Response) {
 
     return res.status(200).json(userData);
 }
+

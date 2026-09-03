@@ -9,3 +9,4 @@ export const signinSchema = z.object({
     email: z.email(),
     password: z.string().min(8),
 });
+
