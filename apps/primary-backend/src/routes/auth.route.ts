@@ -1,19 +1,12 @@
 import { Router } from "express";
 
-import {
-    signup,
-    signin,
-    profile,
-} from "../controllers/auth.controller";
+import {signup,signin,profile} from "../controllers/auth.controller";
 
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 import { validate } from "../middlewares/validate.middleware";
 
-import {
-    signupSchema,
-    signinSchema,
-} from "../schemas/auth.schema";
+import {signupSchema,signinSchema} from "../schemas/auth.schema";
 
 const router = Router();
 
