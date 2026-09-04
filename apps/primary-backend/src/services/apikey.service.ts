@@ -48,5 +48,35 @@ export const ApiKeys ={
             lastUsed: apiKey.lastUsed,
             disabled: apiKey.disabled
         }));
+    },
+
+    async updateApiKeyDisabled(apiKeyId: number, userId: number, disabled: boolean) {
+        const result = await prisma.apiKey.updateMany({
+            where:{
+                id: apiKeyId,
+                userId,
+                deleted: false,
+            },
+            data:{
+                disabled,
+            }
+        });
+
+        return result.count > 0;
+    },
+
+    async deleteApiKey(apiKeyId: number, userId: number) {
+        const result = await prisma.apiKey.updateMany({
+            where:{
+                id: apiKeyId,
+                userId,
+                deleted: false,
+            },
+            data:{
+                deleted: true,
+            }
+        });
+
+        return result.count > 0;
     }
 };
