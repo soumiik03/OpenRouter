@@ -316,5 +316,4 @@ export function ApiKeys() {
   );
 }
 
-export const apiKeys = ApiKeys;
 export default ApiKeys;

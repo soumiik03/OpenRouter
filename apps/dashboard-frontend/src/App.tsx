@@ -25,22 +25,24 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          {/* Public Landing & Marketing */}
+          {/* Public Landing */}
           <Route path="/" element={<Landing />} />
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/Landing" element={<Landing />} />
 
           {/* Authentication */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
 
-          {/* Authenticated Dashboard Pages (with fallback aliases) */}
+          {/* Authenticated Dashboard Pages */}
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashbaord" element={<Dashboard />} />
-          <Route path="/Credits" element={<Credits />} />
-          <Route path="/credits" element={<Credits />} />
-          <Route path="/ApiKeys" element={<ApiKeys />} />
           <Route path="/apikeys" element={<ApiKeys />} />
+          <Route path="/credits" element={<Credits />} />
+
+          {/* Canonical redirects for legacy or alternate casing */}
+          <Route path="/landing" element={<Navigate to="/" replace />} />
+          <Route path="/Landing" element={<Navigate to="/" replace />} />
+          <Route path="/ApiKeys" element={<Navigate to="/apikeys" replace />} />
+          <Route path="/Credits" element={<Navigate to="/credits" replace />} />
+          <Route path="/dashbaord" element={<Navigate to="/dashboard" replace />} />
 
           {/* Catch-all fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -170,5 +170,4 @@ export function Credits() {
   );
 }
 
-export const credits = Credits;
 export default Credits;

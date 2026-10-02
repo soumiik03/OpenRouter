@@ -31,12 +31,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     },
     {
       name: "API Keys",
-      path: "/ApiKeys",
+      path: "/apikeys",
       icon: Key,
     },
     {
       name: "Credits & Billing",
-      path: "/Credits",
+      path: "/credits",
       icon: CreditCard,
     },
   ];
@@ -59,7 +59,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </Link>
         <div className="flex items-center gap-3">
           <Link 
-            to="/Credits" 
+            to="/credits" 
             className="px-2.5 py-1 rounded-md border border-zinc-200 text-xs font-mono text-zinc-700 bg-zinc-50"
           >
             {(profile?.credits ?? 1000).toLocaleString()} cr
@@ -111,7 +111,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
           <div className="pt-4 mt-4 border-t border-zinc-200/60">
             <Link
-              to="/Landing"
+              to="/"
               className="flex items-center justify-between px-3 py-2 rounded-md text-xs text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100/60 transition-colors"
             >
               <span>Homepage</span>
@@ -162,13 +162,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
           <div className="flex items-center gap-3">
             <Link
-              to="/Credits"
+              to="/credits"
               className="px-2.5 py-1 rounded-md border border-zinc-200 text-xs font-mono text-zinc-700 bg-zinc-50 hover:bg-zinc-100 transition-colors"
             >
               Balance: <strong className="text-zinc-950 font-semibold">{isLoading ? "..." : (profile?.credits ?? 1000).toLocaleString()}</strong>
             </Link>
 
-            <Link to="/ApiKeys">
+            <Link to="/apikeys">
               <Button size="sm" className="bg-zinc-900 hover:bg-zinc-800 text-white text-xs h-8 px-3 rounded-md gap-1.5 shadow-none font-medium">
                 <Plus className="size-3.5" />
                 <span>New Key</span>

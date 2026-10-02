@@ -134,5 +134,4 @@ export function SignIn() {
   );
 }
 
-export const signin = SignIn;
 export default SignIn;

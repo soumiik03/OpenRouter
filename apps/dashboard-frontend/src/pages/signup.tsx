@@ -154,5 +154,4 @@ export function SignUp() {
   );
 }
 
-export const signup = SignUp;
 export default SignUp;

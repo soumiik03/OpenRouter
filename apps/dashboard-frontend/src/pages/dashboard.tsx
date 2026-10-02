@@ -76,12 +76,12 @@ print(response.choices[0].message.content)`,
             <p className="text-xs text-zinc-500 mt-0.5">Manage your gateway balance and API keys.</p>
           </div>
           <div className="flex items-center gap-2">
-            <Link to="/Credits">
+            <Link to="/credits">
               <Button variant="outline" size="sm" className="h-8 text-xs border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50 rounded-md font-medium">
                 Add Credits
               </Button>
             </Link>
-            <Link to="/ApiKeys">
+            <Link to="/apikeys">
               <Button size="sm" className="h-8 text-xs bg-zinc-900 hover:bg-zinc-800 text-white rounded-md font-medium shadow-xs">
                 New API Key
               </Button>
@@ -167,7 +167,7 @@ print(response.choices[0].message.content)`,
         <div className="border border-zinc-200/80 rounded-lg bg-white overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
           <div className="px-4 py-3 border-b border-zinc-200/80 flex items-center justify-between">
             <h2 className="text-xs font-semibold text-zinc-950 uppercase tracking-wider">Your API Keys</h2>
-            <Link to="/ApiKeys" className="text-xs text-zinc-500 hover:text-zinc-950 flex items-center gap-1 transition-colors">
+            <Link to="/apikeys" className="text-xs text-zinc-500 hover:text-zinc-950 flex items-center gap-1 transition-colors">
               Manage keys <ArrowRight className="size-3" />
             </Link>
           </div>
@@ -176,7 +176,7 @@ print(response.choices[0].message.content)`,
             <div className="p-8 text-center text-xs text-zinc-500">
               No API keys created yet.
               <div className="mt-2">
-                <Link to="/ApiKeys">
+                <Link to="/apikeys">
                   <Button size="sm" className="h-7 text-xs bg-zinc-900 hover:bg-zinc-800 text-white rounded-md">
                     Create API Key
                   </Button>
@@ -220,5 +220,4 @@ print(response.choices[0].message.content)`,
   );
 }
 
-export const dashboard = Dashboard;
 export default Dashboard;

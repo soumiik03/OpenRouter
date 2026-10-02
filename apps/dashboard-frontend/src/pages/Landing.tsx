@@ -1,216 +1,144 @@
+"use client";
+
 import React, { useState } from "react";
 import { Link } from "react-router";
-import { Copy, Check, Search, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Copy, ArrowRight } from "lucide-react";
+import { ShootingStars } from "@/components/ui/shooting-stars";
+import { StarsBackground } from "@/components/ui/stars-background";
 
 export function Landing() {
   const [copied, setCopied] = useState(false);
-  const [language, setLanguage] = useState<"typescript" | "python" | "curl">("typescript");
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const defaultModels = [
-    { name: "Claude 3.5 Sonnet", slug: "anthropic/claude-3-5-sonnet", provider: "Anthropic", input: "$3.00", output: "$15.00", context: "200k" },
-    { name: "GPT-4o", slug: "openai/gpt-4o", provider: "OpenAI", input: "$2.50", output: "$10.00", context: "128k" },
-    { name: "Gemini 1.5 Pro", slug: "google/gemini-1.5-pro", provider: "Google", input: "$1.25", output: "$5.00", context: "2M" },
-    { name: "Llama 3.3 70B", slug: "meta/llama-3.3-70b", provider: "Meta", input: "$0.40", output: "$0.40", context: "128k" },
-    { name: "DeepSeek V3", slug: "deepseek/deepseek-chat", provider: "DeepSeek", input: "$0.14", output: "$0.28", context: "64k" },
-  ];
-
-  const codeSnippets = {
-    typescript: `import OpenAI from "openai";
-
-const client = new OpenAI({
-  baseURL: "http://localhost:3000",
-  apiKey: "sk-or-v1-YOUR-KEY",
-});
-
-const completion = await client.chat.completions.create({
-  model: "anthropic/claude-3-5-sonnet",
-  messages: [{ role: "user", content: "Hello OpenRouter!" }],
-});
-
-console.log(completion.choices[0].message.content);`,
-
-    python: `from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://localhost:3000",
-    api_key="sk-or-v1-YOUR-KEY"
-)
-
-response = client.chat.completions.create(
-    model="anthropic/claude-3-5-sonnet",
-    messages=[{"role": "user", "content": "Hello OpenRouter!"}]
-)
-
-print(response.choices[0].message.content)`,
-
-    curl: `curl http://localhost:3000/chat/completions \\
-  -H "Authorization: Bearer sk-or-v1-YOUR-KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "anthropic/claude-3-5-sonnet",
-    "messages": [{"role": "user", "content": "Hello OpenRouter!"}]
-  }'`,
-  };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(codeSnippets[language]);
+    navigator.clipboard.writeText("curl http://localhost:3000/chat/completions");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const filteredModels = defaultModels.filter((m) =>
-    m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    m.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    m.provider.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
-    <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-zinc-900 selection:text-white">
-      {/* Header */}
-      <header className="border-b border-zinc-200/80 sticky top-0 bg-white/95 backdrop-blur z-50">
-        <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link to="/" className="font-semibold text-sm tracking-tight text-zinc-950 hover:opacity-80 transition-opacity">
-            OpenRouter
+    <div className="h-screen w-screen bg-black text-white flex flex-col justify-between overflow-hidden relative select-none font-sans">
+      {/* Background Starfield & Shooting Stars (Monochrome White) */}
+      <StarsBackground
+        starDensity={0.00015}
+        allStarsTwinkle={true}
+        twinkleProbability={0.6}
+        minTwinkleSpeed={0.5}
+        maxTwinkleSpeed={1.2}
+        className="opacity-60 pointer-events-none"
+      />
+      <ShootingStars
+        starColor="#ffffff"
+        trailColor="rgba(255, 255, 255, 0.25)"
+        minSpeed={18}
+        maxSpeed={38}
+        minDelay={1500}
+        maxDelay={4500}
+        starWidth={14}
+        starHeight={1}
+        className="pointer-events-none"
+      />
+
+      {/* Top Navbar */}
+      <header className="relative z-10 h-16 px-6 sm:px-10 border-b border-zinc-800 bg-black/90 flex items-center justify-between shrink-0">
+        {/* SETU Branding - Bold, Visible, High Contrast */}
+        <div className="flex items-center gap-3">
+          <div className="size-2 bg-white" />
+          <Link to="/" className="flex items-center gap-2.5">
+            <span className="text-xl font-bold tracking-tight text-white font-['Space_Grotesk']">
+              SETU
+            </span>
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-l border-zinc-800 pl-2.5 hidden sm:inline">
+              AI BRIDGE // 01
+            </span>
+          </Link>
+        </div>
+
+        {/* Right Navigation */}
+        <div className="flex items-center gap-3 sm:gap-4 font-mono text-xs">
+          <Link
+            to="/signin"
+            className="text-zinc-400 hover:text-white px-3 py-1.5 border border-zinc-800 hover:border-zinc-600 transition-colors uppercase text-[11px]"
+          >
+            Sign In
           </Link>
 
-          <nav className="hidden sm:flex items-center gap-6 text-xs text-zinc-600">
-            <a href="#quickstart" className="hover:text-zinc-950 transition-colors">Quickstart</a>
-            <a href="#models" className="hover:text-zinc-950 transition-colors">Models</a>
-            <Link to="/Credits" className="hover:text-zinc-950 transition-colors">Pricing</Link>
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <Link to="/signin">
-              <Button variant="ghost" size="sm" className="text-xs h-8 text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/70 font-medium">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button size="sm" className="text-xs h-8 bg-zinc-900 hover:bg-zinc-800 text-white rounded-md font-medium px-3 shadow-xs">
-                Get Started
-              </Button>
-            </Link>
-          </div>
+          <Link to="/dashboard">
+            <button className="h-8 px-4 bg-white text-black hover:bg-zinc-200 text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 border border-white transition-colors cursor-pointer">
+              <span>Console</span>
+              <ArrowRight className="size-3" />
+            </button>
+          </Link>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-24 pb-16 px-6 max-w-3xl mx-auto text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-zinc-950 leading-[1.15]">
-          Unified API Gateway for LLMs
+      {/* Main Hero Body - Centered in Viewport */}
+      <main className="relative z-10 flex flex-col items-center justify-center text-center my-auto max-w-4xl mx-auto px-6 py-4">
+        {/* Category Box */}
+        <div className="px-3 py-1 border border-zinc-800 bg-zinc-950 text-[11px] font-mono text-zinc-400 tracking-wider uppercase mb-6 flex items-center gap-2">
+          <span className="size-1.5 bg-white" />
+          <span>UNIFIED ROUTING INFRASTRUCTURE</span>
+        </div>
+
+        {/* Headline in Space Grotesk */}
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-white uppercase font-['Space_Grotesk'] leading-[1.05] max-w-4xl">
+          Bridge any application <br />
+          <span className="text-zinc-300 font-light">to every frontier model.</span>
         </h1>
-        <p className="mt-4 text-sm sm:text-base text-zinc-600 max-w-lg mx-auto leading-relaxed">
-          One API key for OpenAI, Anthropic, Gemini, and open-source models. Standard OpenAI SDK compatible with zero price markup.
+
+        {/* Subtitle */}
+        <p className="mt-5 text-xs sm:text-sm md:text-base text-zinc-400 max-w-xl mx-auto font-mono leading-relaxed">
+          A single endpoint for Claude, GPT, Llama, and 100+ LLMs. Zero markup. Sub-millisecond routing cascades.
         </p>
 
-        <div className="mt-8 flex items-center justify-center gap-3">
-          <Link to="/signup">
-            <Button size="lg" className="h-9 px-4 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium rounded-md gap-1.5 shadow-xs">
-              <span>Start Free</span>
-              <ArrowRight className="size-3" />
-            </Button>
+        {/* Action Controls - Sharp Rectangular Boxes */}
+        <div className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-lg">
+          <Link to="/dashboard" className="w-full sm:w-auto">
+            <button className="w-full sm:w-auto h-11 px-6 bg-white text-black hover:bg-zinc-200 text-xs font-mono font-bold tracking-wider uppercase flex items-center justify-center gap-2 border border-white transition-all cursor-pointer">
+              <span>LAUNCH CONSOLE</span>
+              <ArrowRight className="size-3.5" />
+            </button>
           </Link>
-          <Link to="/dashboard">
-            <Button variant="outline" size="lg" className="h-9 px-4 border-zinc-200 text-zinc-800 hover:bg-zinc-50 text-xs font-medium rounded-md">
-              Dashboard
-            </Button>
-          </Link>
-        </div>
-      </section>
 
-      {/* Code Snippet */}
-      <section id="quickstart" className="py-8 px-6 max-w-3xl mx-auto">
-        <div className="border border-zinc-200 rounded-lg overflow-hidden bg-white shadow-xs">
-          <div className="flex items-center justify-between px-3.5 py-2 bg-zinc-50 border-b border-zinc-200 text-xs">
-            <div className="flex items-center gap-1">
-              {(["typescript", "python", "curl"] as const).map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => setLanguage(lang)}
-                  className={`px-2.5 py-1 rounded capitalize font-mono text-xs transition-colors ${
-                    language === lang
-                      ? "bg-white text-zinc-950 border border-zinc-200/80 font-medium shadow-2xs"
-                      : "text-zinc-500 hover:text-zinc-800"
-                  }`}
-                >
-                  {lang}
-                </button>
-              ))}
+          <div className="flex items-center justify-between w-full sm:w-auto border border-zinc-800 bg-zinc-950 h-11 px-3.5 text-xs font-mono text-zinc-300">
+            <div className="flex items-center gap-1.5 truncate">
+              <span className="text-zinc-600 select-none">$</span>
+              <span className="text-zinc-300 font-mono">curl /chat/completions</span>
             </div>
-
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={handleCopy}
-              className="h-6 px-2 text-xs border-zinc-200 text-zinc-700 hover:bg-zinc-50 gap-1 bg-white"
+              className="ml-3 text-zinc-500 hover:text-white p-1 transition-colors cursor-pointer shrink-0 font-mono"
+              title="Copy endpoint"
             >
-              {copied ? <Check className="size-3 text-zinc-950" /> : <Copy className="size-3 text-zinc-500" />}
-              <span>{copied ? "Copied" : "Copy"}</span>
-            </Button>
-          </div>
-
-          <div className="p-4 bg-zinc-950 text-zinc-100 font-mono text-xs overflow-x-auto leading-relaxed">
-            <pre>
-              <code>{codeSnippets[language]}</code>
-            </pre>
+              {copied ? (
+                <span className="text-[10px] text-white uppercase font-bold">COPIED</span>
+              ) : (
+                <Copy className="size-3.5 text-zinc-400" />
+              )}
+            </button>
           </div>
         </div>
-      </section>
+      </main>
 
-      {/* Models Table */}
-      <section id="models" className="py-12 px-6 max-w-3xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <div>
-            <h2 className="text-base font-semibold text-zinc-950">Supported Models</h2>
-            <p className="text-xs text-zinc-500 mt-0.5">Rates per 1 million tokens.</p>
-          </div>
-
-          <div className="relative w-full sm:w-60">
-            <Search className="size-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search models..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1 border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
-            />
-          </div>
+      {/* Fixed Bottom Bar - Single Page Docked Footer */}
+      <footer className="relative z-10 h-14 px-6 sm:px-10 border-t border-zinc-800 bg-black/90 flex items-center justify-between text-xs font-mono text-zinc-500 shrink-0">
+        <div className="flex items-center gap-4">
+          <span className="text-white font-bold tracking-wider font-['Space_Grotesk'] text-sm">
+            SETU
+          </span>
         </div>
 
-        <div className="border border-zinc-200 rounded-lg overflow-hidden bg-white">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-mono uppercase">
-              <tr>
-                <th className="py-2.5 px-3.5">Model</th>
-                <th className="py-2.5 px-3.5">Provider</th>
-                <th className="py-2.5 px-3.5">Input / 1M</th>
-                <th className="py-2.5 px-3.5">Output / 1M</th>
-                <th className="py-2.5 px-3.5">Context</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 text-zinc-800">
-              {filteredModels.map((m) => (
-                <tr key={m.slug} className="hover:bg-zinc-50/70 transition-colors">
-                  <td className="py-2.5 px-3.5 font-medium text-zinc-950">
-                    <div>{m.name}</div>
-                    <div className="text-[11px] text-zinc-400 font-mono">{m.slug}</div>
-                  </td>
-                  <td className="py-2.5 px-3.5 text-zinc-600">{m.provider}</td>
-                  <td className="py-2.5 px-3.5 font-mono text-zinc-700">{m.input}</td>
-                  <td className="py-2.5 px-3.5 font-mono text-zinc-700">{m.output}</td>
-                  <td className="py-2.5 px-3.5 font-mono text-zinc-500">{m.context}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex items-center gap-4 text-zinc-400 text-[11px]">
+          <Link to="/dashboard" className="hover:text-white transition-colors">
+            DASHBOARD
+          </Link>
+          <Link to="/apikeys" className="hover:text-white transition-colors">
+            KEYS
+          </Link>
+          <Link to="/credits" className="hover:text-white transition-colors">
+            BILLING
+          </Link>
+          <span className="text-zinc-600">&copy; {new Date().getFullYear()}</span>
         </div>
-      </section>
-
-      {/* Minimal Footer */}
-      <footer className="border-t border-zinc-200/80 py-8 px-6 text-center text-xs text-zinc-400">
-        <p>&copy; {new Date().getFullYear()} OpenRouter.</p>
       </footer>
     </div>
   );
