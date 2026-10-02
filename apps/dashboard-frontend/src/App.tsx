@@ -10,45 +10,40 @@ import { Dashboard } from "./pages/dashboard";
 import { Credits } from "./pages/Credits";
 import { ApiKeys } from "./pages/ApiKeys";
 
+import { ThemeProvider } from "./lib/theme";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
-      staleTime: 1000 * 30, // 30 seconds
+      staleTime: 1000 * 30,
     },
   },
 });
 
 export function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Landing */}
-          <Route path="/" element={<Landing />} />
-
-          {/* Authentication */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-
-          {/* Authenticated Dashboard Pages */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/apikeys" element={<ApiKeys />} />
-          <Route path="/credits" element={<Credits />} />
-
-          {/* Canonical redirects for legacy or alternate casing */}
-          <Route path="/landing" element={<Navigate to="/" replace />} />
-          <Route path="/Landing" element={<Navigate to="/" replace />} />
-          <Route path="/ApiKeys" element={<Navigate to="/apikeys" replace />} />
-          <Route path="/Credits" element={<Navigate to="/credits" replace />} />
-          <Route path="/dashbaord" element={<Navigate to="/dashboard" replace />} />
-
-          {/* Catch-all fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/apikeys" element={<ApiKeys />} />
+            <Route path="/credits" element={<Credits />} />
+            <Route path="/landing" element={<Navigate to="/" replace />} />
+            <Route path="/Landing" element={<Navigate to="/" replace />} />
+            <Route path="/ApiKeys" element={<Navigate to="/apikeys" replace />} />
+            <Route path="/Credits" element={<Navigate to="/credits" replace />} />
+            <Route path="/dashbaord" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

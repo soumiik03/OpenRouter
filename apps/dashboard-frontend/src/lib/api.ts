@@ -18,6 +18,7 @@ export interface ApiKey {
   deleted: boolean;
   lastUsed: string | null;
   creditsConsumed: number;
+  credisConsumed?: number;
 }
 
 export interface Company {
@@ -84,6 +85,14 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   const data = isJson ? await response.json() : await response.text();
 
   if (!response.ok) {
+    if (response.status === 401 && !endpoint.includes("/auth/signin") && !endpoint.includes("/auth/signup")) {
+      if (typeof window !== "undefined") {
+        const path = window.location.pathname;
+        if (path !== "/" && !path.includes("/signin") && !path.includes("/signup")) {
+          window.location.href = "/signin";
+        }
+      }
+    }
     const errorMessage =
       typeof data === "object" && data !== null && "message" in data
         ? (data as { message: string }).message
@@ -94,11 +103,9 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   return data as T;
 }
 
-// ==================== AUTH API ====================
-
 export const authApi = {
   signup: (payload: { email: string; password: string }) =>
-    request<{ id: number }>("/auth/signup", {
+    request<{ message: string; id: string }>("/auth/signup", {
       method: "POST",
       body: JSON.stringify(payload),
     }),
@@ -109,10 +116,13 @@ export const authApi = {
       body: JSON.stringify(payload),
     }),
 
+  logout: () =>
+    request<{ message: string }>("/auth/logout", {
+      method: "POST",
+    }),
+
   getProfile: () => request<User>("/auth/profile"),
 };
-
-// ==================== API KEYS ====================
 
 export const apiKeyApi = {
   getApiKeys: () => request<{ apiKeys: ApiKey[] }>("/api-keys"),
@@ -135,8 +145,6 @@ export const apiKeyApi = {
     }),
 };
 
-// ==================== MODELS API ====================
-
 export const modelsApi = {
   getModels: () => request<{ models: AIModel[] }>("/models"),
   getProviders: () => request<{ providers: Provider[] }>("/models/providers"),
@@ -144,24 +152,34 @@ export const modelsApi = {
     request<{ providers: Provider[] }>(`/models/${modelId}/providers`),
 };
 
-// ==================== PAYMENTS API ====================
-
 export const paymentsApi = {
   onramp: (payload?: { amount?: number }) =>
-    request<{ message: string; credits: number }>("/payments/onramp", {
+    request<{ message: string; credits: number; amount: number }>("/payments/onramp", {
       method: "POST",
       body: JSON.stringify(payload || {}),
     }),
+  getHistory: () =>
+    request<{ transactions: OnrampTransaction[] }>("/payments/history"),
 };
-
-// ==================== TANSTACK QUERY HOOKS ====================
 
 export function useProfile() {
   return useQuery({
     queryKey: ["auth", "profile"],
     queryFn: authApi.getProfile,
     retry: false,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 2000,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
+  });
+}
+
+export function useTransactions() {
+  return useQuery({
+    queryKey: ["payments", "history"],
+    queryFn: paymentsApi.getHistory,
+    staleTime: 5000,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -169,7 +187,10 @@ export function useApiKeys() {
   return useQuery({
     queryKey: ["api-keys"],
     queryFn: apiKeyApi.getApiKeys,
-    staleTime: 1000 * 30, // 30 seconds
+    staleTime: 2000,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -177,7 +198,7 @@ export function useModels() {
   return useQuery({
     queryKey: ["models"],
     queryFn: modelsApi.getModels,
-    staleTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: 1000 * 60 * 10,
   });
 }
 
@@ -188,6 +209,7 @@ export function useSignIn() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "profile"] });
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+      queryClient.invalidateQueries({ queryKey: ["payments", "history"] });
     },
   });
 }
@@ -198,6 +220,19 @@ export function useSignUp() {
     mutationFn: authApi.signup,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "profile"] });
+      queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+      queryClient.invalidateQueries({ queryKey: ["payments", "history"] });
+    },
+  });
+}
+
+export function useSignOut() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      queryClient.clear();
+      window.location.href = "/signin";
     },
   });
 }
@@ -240,6 +275,7 @@ export function useOnramp() {
     mutationFn: paymentsApi.onramp,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "profile"] });
+      queryClient.invalidateQueries({ queryKey: ["payments", "history"] });
     },
   });
 }

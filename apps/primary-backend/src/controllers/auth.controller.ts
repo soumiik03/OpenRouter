@@ -2,20 +2,39 @@ import { type Request, type Response } from "express";
 import { AuthService } from "../services/auth.service";
 import { signToken } from "../lib/jwt";
 
+import { prisma } from "db";
+
 export async function signup(req: Request, res: Response) {
     try {
         const { email, password } = req.body;
 
+        const existing = await prisma.user.findUnique({ where: { email } });
+        if (existing) {
+            return res.status(400).json({
+                message: "An account with this email already exists. Please sign in.",
+            });
+        }
+
         const userId = await AuthService.signup(email, password);
 
+        const token = signToken(userId);
+
+        res.cookie("auth", token, {
+            httpOnly: true,
+            maxAge: 30 * 60 * 1000,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+        });
+
         return res.status(201).json({
+            message: "Account created successfully",
             id: userId,
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
 
         return res.status(400).json({
-            message: "Error while signing up",
+            message: error?.message || "Error while signing up",
         });
     }
 }
@@ -27,7 +46,7 @@ export async function signin(req: Request, res: Response) {
 
     if (!correctCredentials || !userId) {
         return res.status(403).json({
-            message: "Incorrect credentials",
+            message: "Incorrect email or password",
         });
     }
 
@@ -35,13 +54,20 @@ export async function signin(req: Request, res: Response) {
 
     res.cookie("auth", token, {
         httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 30 * 60 * 1000,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
     });
 
     return res.status(200).json({
         message: "Signed in successfully",
+    });
+}
+
+export async function logout(_req: Request, res: Response) {
+    res.clearCookie("auth");
+    return res.status(200).json({
+        message: "Signed out successfully",
     });
 }
 

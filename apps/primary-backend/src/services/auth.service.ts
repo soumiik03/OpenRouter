@@ -2,10 +2,18 @@ import { prisma } from "db";
 
 export const AuthService = {
     async signup(email: string, password: string) {
+        const hashedPassword = await Bun.password.hash(password);
         const user = await prisma.user.create({
             data: {
                 email,
-                password: await Bun.password.hash(password),
+                password: hashedPassword,
+                credits: 1000,
+                onrampTransactions: {
+                    create: {
+                        amount: 1000,
+                        status: "completed"
+                    }
+                }
             },
         });
         return user.id.toString();
@@ -25,7 +33,28 @@ export const AuthService = {
     async getUserDetails(id: number) {
         return prisma.user.findUnique({
             where: { id },
-            select: { credits: true },
+            select: { 
+                id: true,
+                email: true,
+                credits: true,
+                apiKeys: {
+                    where: { deleted: false },
+                    select: {
+                        id: true,
+                        userId: true,
+                        name: true,
+                        apiKey: true,
+                        disabled: true,
+                        deleted: true,
+                        lastUsed: true,
+                        creditsConsumed: true,
+                    }
+                },
+                onrampTransactions: {
+                    orderBy: { id: "desc" },
+                    take: 20,
+                }
+            },
         });
     }
 }

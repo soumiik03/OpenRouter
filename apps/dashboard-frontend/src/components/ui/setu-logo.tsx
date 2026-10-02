@@ -4,10 +4,6 @@ interface SetuLogoProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
 }
 
-/**
- * Setu Logo — Minimal Geometric S-Bridge
- * Ultra-clean, mathematical grid alignment, razor-sharp monochrome precision.
- */
 export function SetuLogo({
   size = 20,
   className = "",
@@ -24,13 +20,8 @@ export function SetuLogo({
       aria-label="Setu Logo"
       {...props}
     >
-      {/* Top-Left Cantilever Span */}
       <path d="M3 3H16V7H7V14H3V3Z" />
-
-      {/* Center Routing Keystone Node */}
       <rect x="10" y="10" width="4" height="4" />
-
-      {/* Bottom-Right Cantilever Span */}
       <path d="M21 21H8V17H17V10H21V21Z" />
     </svg>
   );

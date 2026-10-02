@@ -18,7 +18,6 @@ export function Landing() {
 
   return (
     <div className="h-screen w-screen bg-black text-white flex flex-col justify-between overflow-hidden relative select-none font-sans">
-      {/* Background Starfield & Shooting Stars (Monochrome White) */}
       <StarsBackground
         starDensity={0.00015}
         allStarsTwinkle={true}
@@ -39,9 +38,7 @@ export function Landing() {
         className="pointer-events-none"
       />
 
-      {/* Top Navbar */}
       <header className="relative z-10 h-16 px-6 sm:px-10 border-b border-zinc-800 bg-black/90 flex items-center justify-between shrink-0">
-        {/* SETU Branding - Bold, Visible, High Contrast */}
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-2.5 group">
             <div className="p-1 border border-zinc-800 bg-zinc-950 group-hover:border-zinc-700 transition-colors flex items-center justify-center">
@@ -52,13 +49,12 @@ export function Landing() {
                 SETU
               </span>
               <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-l border-zinc-800 pl-2 hidden sm:inline">
-                AI BRIDGE // 01
+                AI BRIDGE
               </span>
             </div>
           </Link>
         </div>
 
-        {/* Right Navigation */}
         <div className="flex items-center gap-3 sm:gap-4 font-mono text-xs">
           <Link
             to="/signin"
@@ -76,26 +72,21 @@ export function Landing() {
         </div>
       </header>
 
-      {/* Main Hero Body - Centered in Viewport */}
       <main className="relative z-10 flex flex-col items-center justify-center text-center my-auto max-w-4xl mx-auto px-6 py-4">
-        {/* Category Box */}
         <div className="px-3 py-1 border border-zinc-800 bg-zinc-950 text-[11px] font-mono text-zinc-400 tracking-wider uppercase mb-6 flex items-center gap-2">
           <span className="size-1.5 bg-white" />
           <span>UNIFIED ROUTING INFRASTRUCTURE</span>
         </div>
 
-        {/* Headline in Space Grotesk */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-white uppercase font-['Space_Grotesk'] leading-[1.05] max-w-4xl">
           Bridge any application <br />
           <span className="text-zinc-300 font-light">to every frontier model.</span>
         </h1>
 
-        {/* Subtitle */}
         <p className="mt-5 text-xs sm:text-sm md:text-base text-zinc-400 max-w-xl mx-auto font-mono leading-relaxed">
           A single endpoint for Claude, GPT, Llama, and 100+ LLMs. Zero markup. Sub-millisecond routing cascades.
         </p>
 
-        {/* Action Controls - Sharp Rectangular Boxes */}
         <div className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-lg">
           <Link to="/dashboard" className="w-full sm:w-auto">
             <button className="w-full sm:w-auto h-11 px-6 bg-white text-black hover:bg-zinc-200 text-xs font-mono font-bold tracking-wider uppercase flex items-center justify-center gap-2 border border-white transition-all cursor-pointer">
@@ -124,7 +115,6 @@ export function Landing() {
         </div>
       </main>
 
-      {/* Fixed Bottom Bar - Single Page Docked Footer */}
       <footer className="relative z-10 h-14 px-6 sm:px-10 border-t border-zinc-800 bg-black/90 flex items-center justify-between text-xs font-mono text-zinc-500 shrink-0">
         <div className="flex items-center gap-2">
           <SetuLogo size={16} className="text-white" />
@@ -133,17 +123,14 @@ export function Landing() {
           </span>
         </div>
 
-        <div className="flex items-center gap-4 text-zinc-400 text-[11px]">
-          <Link to="/dashboard" className="hover:text-white transition-colors">
-            DASHBOARD
+        <div className="flex items-center gap-4 text-[11px]">
+          <Link to="/signin" className="hover:text-white transition-colors">
+            Terms
           </Link>
-          <Link to="/apikeys" className="hover:text-white transition-colors">
-            KEYS
+          <Link to="/signin" className="hover:text-white transition-colors">
+            Privacy
           </Link>
-          <Link to="/credits" className="hover:text-white transition-colors">
-            BILLING
-          </Link>
-          <span className="text-zinc-600">&copy; {new Date().getFullYear()}</span>
+          <span className="text-zinc-600">© {new Date().getFullYear()}</span>
         </div>
       </footer>
     </div>

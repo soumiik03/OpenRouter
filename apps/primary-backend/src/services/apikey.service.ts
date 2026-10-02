@@ -33,17 +33,26 @@ export const ApiKeys ={
 
     async getApiKeys(userId: number) {
         const apiKeys = await prisma.apiKey.findMany({
-            where:{
+            where: {
                 userId,
-                deleted: false
+                deleted: false,
             },
-            orderBy: { id: "desc" }
+            select: {
+                id: true,
+                apiKey: true,
+                name: true,
+                creditsConsumed: true,
+                lastUsed: true,
+                disabled: true,
+            },
+            orderBy: { id: "desc" },
         });
 
         return apiKeys.map((apiKey) => ({
             id: apiKey.id.toString(),
             apiKey: apiKey.apiKey,
             name: apiKey.name,
+            creditsConsumed: apiKey.creditsConsumed,
             credisConsumed: apiKey.creditsConsumed,
             lastUsed: apiKey.lastUsed,
             disabled: apiKey.disabled

@@ -1,216 +1,152 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router";
-import { 
-  Copy, 
-  Check, 
-  ArrowRight
-} from "lucide-react";
+import { ArrowRight, Plus, CreditCard } from "lucide-react";
 import { useProfile, useApiKeys } from "@/lib/api";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { Button } from "@/components/ui/button";
 
 export function Dashboard() {
-  const [copied, setCopied] = useState(false);
-  const [language, setLanguage] = useState<"typescript" | "python" | "curl">("typescript");
-
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: keysData, isLoading: keysLoading } = useApiKeys();
 
   const apiKeys = keysData?.apiKeys || profile?.apiKeys || [];
   const activeKeysCount = apiKeys.filter((k) => !k.disabled && !k.deleted).length;
-  const totalCreditsConsumed = apiKeys.reduce((acc, k) => acc + (k.creditsConsumed || 0), 0);
-
-  const activeKeySample = apiKeys.find((k) => !k.disabled && !k.deleted)?.apiKey || "sk-or-v1-YOUR-KEY";
-
-  const codeSnippets = {
-    typescript: `import OpenAI from "openai";
-
-const client = new OpenAI({
-  baseURL: "http://localhost:3000",
-  apiKey: "${activeKeySample}",
-});
-
-const response = await client.chat.completions.create({
-  model: "anthropic/claude-3-5-sonnet",
-  messages: [{ role: "user", content: "Hello OpenRouter!" }],
-});
-
-console.log(response.choices[0].message.content);`,
-
-    python: `from openai import OpenAI
-
-client = OpenAI(
-    base_url="http://localhost:3000",
-    api_key="${activeKeySample}"
-)
-
-response = client.chat.completions.create(
-    model="anthropic/claude-3-5-sonnet",
-    messages=[{"role": "user", "content": "Hello OpenRouter!"}]
-)
-
-print(response.choices[0].message.content)`,
-
-    curl: `curl http://localhost:3000/chat/completions \\
-  -H "Authorization: Bearer ${activeKeySample}" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "model": "anthropic/claude-3-5-sonnet",
-    "messages": [{"role": "user", "content": "Hello OpenRouter!"}]
-  }'`,
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(codeSnippets[language]);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const totalCreditsConsumed = apiKeys.reduce(
+    (acc, k) => acc + (k.creditsConsumed ?? k.credisConsumed ?? 0),
+    0
+  );
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-200/80">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-200 dark:border-zinc-800">
           <div>
-            <h1 className="text-lg font-semibold tracking-tight text-zinc-950">Overview</h1>
-            <p className="text-xs text-zinc-500 mt-0.5">Manage your gateway balance and API keys.</p>
+            <h1 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-white font-['Space_Grotesk']">
+              Overview
+            </h1>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-mono mt-0.5">
+              Manage your gateway balance, keys, and usage.
+            </p>
           </div>
+
           <div className="flex items-center gap-2">
             <Link to="/credits">
-              <Button variant="outline" size="sm" className="h-8 text-xs border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50 rounded-md font-medium">
-                Add Credits
-              </Button>
+              <button className="h-8 px-3.5 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-xs font-mono uppercase text-zinc-700 dark:text-zinc-300 rounded-none transition-colors cursor-pointer flex items-center gap-1.5">
+                <CreditCard className="size-3 text-zinc-400" />
+                <span>Add Credits</span>
+              </button>
             </Link>
             <Link to="/apikeys">
-              <Button size="sm" className="h-8 text-xs bg-zinc-900 hover:bg-zinc-800 text-white rounded-md font-medium shadow-xs">
-                New API Key
-              </Button>
+              <button className="h-8 px-3.5 bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-900 dark:border-white text-xs font-mono font-bold uppercase tracking-wider rounded-none transition-colors cursor-pointer flex items-center gap-1.5">
+                <Plus className="size-3.5 stroke-[2.5]" />
+                <span>New API Key</span>
+              </button>
             </Link>
           </div>
         </div>
 
-        {/* 3 Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg border border-zinc-200/80 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-            <div className="text-xs text-zinc-500 font-medium">Available Credits</div>
-            <div className="text-2xl font-bold font-mono text-zinc-950 mt-1 tracking-tight">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="p-5 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-none">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+              Available Credits
+            </div>
+            <div className="text-2xl font-bold font-mono text-zinc-950 dark:text-white tracking-tight mt-1.5">
               {profileLoading ? "..." : (profile?.credits ?? 1000).toLocaleString()}
             </div>
-            <div className="text-[11px] text-zinc-500 mt-1 font-mono">
+            <div className="text-xs font-mono text-zinc-500 dark:text-zinc-400 mt-1">
               ~${((profile?.credits ?? 1000) / 1000).toFixed(2)} USD
             </div>
           </div>
 
-          <div className="p-4 rounded-lg border border-zinc-200/80 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-            <div className="text-xs text-zinc-500 font-medium">Active API Keys</div>
-            <div className="text-2xl font-bold font-mono text-zinc-950 mt-1 tracking-tight">
+          <div className="p-5 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-none">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+              Active API Keys
+            </div>
+            <div className="text-2xl font-bold font-mono text-zinc-950 dark:text-white tracking-tight mt-1.5">
               {keysLoading ? "..." : activeKeysCount}
             </div>
-            <div className="text-[11px] text-zinc-500 mt-1">
-              {apiKeys.length} total keys
+            <div className="text-xs font-mono text-zinc-500 dark:text-zinc-400 mt-1">
+              {apiKeys.length} {apiKeys.length === 1 ? "total key" : "total keys"}
             </div>
           </div>
 
-          <div className="p-4 rounded-lg border border-zinc-200/80 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-            <div className="text-xs text-zinc-500 font-medium">Credits Consumed</div>
-            <div className="text-2xl font-bold font-mono text-zinc-950 mt-1 tracking-tight">
-              {totalCreditsConsumed.toLocaleString()}
+          <div className="p-5 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-none">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+              Credits Consumed
             </div>
-            <div className="text-[11px] text-zinc-500 mt-1">
+            <div className="text-2xl font-bold font-mono text-zinc-950 dark:text-white tracking-tight mt-1.5">
+              {keysLoading ? "..." : totalCreditsConsumed.toLocaleString()}
+            </div>
+            <div className="text-xs font-mono text-zinc-500 dark:text-zinc-400 mt-1">
               Total usage across keys
             </div>
           </div>
         </div>
 
-        {/* Quickstart Integration */}
-        <div className="border border-zinc-200/80 rounded-lg overflow-hidden bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-          <div className="flex items-center justify-between px-3.5 py-2 bg-zinc-50/70 border-b border-zinc-200/80 text-xs">
-            <span className="font-medium text-zinc-800">Quickstart Integration</span>
-
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                {(["typescript", "python", "curl"] as const).map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => setLanguage(lang)}
-                    className={`px-2 py-0.5 rounded capitalize font-mono text-xs transition-colors ${
-                      language === lang
-                        ? "bg-white text-zinc-950 border border-zinc-200 font-medium shadow-2xs"
-                        : "text-zinc-500 hover:text-zinc-800"
-                    }`}
-                  >
-                    {lang}
-                  </button>
-                ))}
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopy}
-                className="h-6 px-2 text-xs border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50 gap-1 rounded"
-              >
-                {copied ? <Check className="size-3 text-zinc-950" /> : <Copy className="size-3 text-zinc-500" />}
-                <span>{copied ? "Copied" : "Copy"}</span>
-              </Button>
-            </div>
-          </div>
-
-          <div className="p-4 bg-zinc-950 text-zinc-100 font-mono text-xs overflow-x-auto leading-relaxed">
-            <pre>
-              <code>{codeSnippets[language]}</code>
-            </pre>
-          </div>
-        </div>
-
-        {/* API Keys Table */}
-        <div className="border border-zinc-200/80 rounded-lg bg-white overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
-          <div className="px-4 py-3 border-b border-zinc-200/80 flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-zinc-950 uppercase tracking-wider">Your API Keys</h2>
-            <Link to="/apikeys" className="text-xs text-zinc-500 hover:text-zinc-950 flex items-center gap-1 transition-colors">
-              Manage keys <ArrowRight className="size-3" />
+        <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-none overflow-hidden">
+          <div className="px-5 py-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/70 dark:bg-black">
+            <h2 className="text-xs font-mono font-bold text-zinc-950 dark:text-white uppercase tracking-wider">
+              Your API Keys
+            </h2>
+            <Link 
+              to="/apikeys" 
+              className="text-xs font-mono text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 transition-colors"
+            >
+              <span>Manage keys</span>
+              <ArrowRight className="size-3" />
             </Link>
           </div>
 
           {apiKeys.length === 0 ? (
-            <div className="p-8 text-center text-xs text-zinc-500">
+            <div className="p-10 text-center font-mono text-xs text-zinc-500">
               No API keys created yet.
-              <div className="mt-2">
+              <div className="mt-3">
                 <Link to="/apikeys">
-                  <Button size="sm" className="h-7 text-xs bg-zinc-900 hover:bg-zinc-800 text-white rounded-md">
+                  <button className="h-8 px-4 bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 text-xs font-mono font-bold uppercase rounded-none cursor-pointer">
                     Create API Key
-                  </Button>
+                  </button>
                 </Link>
               </div>
             </div>
           ) : (
-            <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-50/70 border-b border-zinc-200/80 text-zinc-500 font-mono uppercase">
+            <table className="w-full text-left text-xs font-mono">
+              <thead className="bg-zinc-50 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 uppercase text-[10px] tracking-wider">
                 <tr>
-                  <th className="py-2.5 px-4 font-medium">Name</th>
-                  <th className="py-2.5 px-4 font-medium">Token</th>
-                  <th className="py-2.5 px-4 font-medium">Usage</th>
-                  <th className="py-2.5 px-4 text-right font-medium">Status</th>
+                  <th className="py-2.5 px-4 font-medium">NAME</th>
+                  <th className="py-2.5 px-4 font-medium">TOKEN</th>
+                  <th className="py-2.5 px-4 font-medium">USAGE</th>
+                  <th className="py-2.5 px-4 text-right font-medium">STATUS</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 text-zinc-800">
-                {apiKeys.slice(0, 5).map((key) => (
-                  <tr key={key.id} className="hover:bg-zinc-50/50 transition-colors">
-                    <td className="py-2.5 px-4 font-medium text-zinc-950">{key.name}</td>
-                    <td className="py-2.5 px-4 font-mono text-zinc-500">
-                      {key.apiKey ? `${key.apiKey.slice(0, 10)}••••••••` : "sk-or-v1-••••••••"}
-                    </td>
-                    <td className="py-2.5 px-4 font-mono text-zinc-600">
-                      {(key.creditsConsumed || 0).toLocaleString()} cr
-                    </td>
-                    <td className="py-2.5 px-4 text-right">
-                      <span className={`inline-block size-1.5 rounded-full ${key.disabled ? "bg-zinc-300" : "bg-emerald-500"}`} />
-                      <span className="ml-1.5 text-zinc-600 capitalize text-[11px]">
-                        {key.disabled ? "Disabled" : "Active"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-900 text-zinc-700 dark:text-zinc-300">
+                {apiKeys.slice(0, 5).map((key) => {
+                  const usage = (key.creditsConsumed ?? key.credisConsumed ?? 0);
+                  return (
+                    <tr key={key.id} className="hover:bg-zinc-50/60 dark:hover:bg-zinc-900/30 transition-colors">
+                      <td className="py-3 px-4 font-medium text-zinc-950 dark:text-white">{key.name}</td>
+                      <td className="py-3 px-4 text-zinc-500 dark:text-zinc-400">
+                        <span className="px-2 py-0.5 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-black text-zinc-700 dark:text-zinc-300">
+                          {key.apiKey ? `${key.apiKey.slice(0, 10)}••••••••` : "sk-or-v1-••••••••"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 font-semibold text-emerald-600 dark:text-emerald-400">
+                        {usage.toLocaleString()} cr
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        {key.disabled ? (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-500 text-[10px] uppercase font-mono rounded-none">
+                            <span className="size-1.5 bg-zinc-400 dark:bg-zinc-600" />
+                            Disabled
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] uppercase font-mono rounded-none">
+                            <span className="size-1.5 bg-emerald-500 dark:bg-emerald-400" />
+                            Active
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}

@@ -19,15 +19,19 @@
   body {
     margin: 0;
     min-height: 100vh;
-    background-color: #ffffff;
-    color: #09090b;
+    background-color: #f4f4f5;
+    color: #18181b;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  html.dark body {
+    background-color: #000000;
+    color: #ffffff;
+  }
 }
 
-/* Minimalist clean scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -38,10 +42,9 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #e4e4e7;
-  border-radius: 9999px;
+  background: #d4d4d8;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa;
+html.dark ::-webkit-scrollbar-thumb {
+  background: #27272a;
 }

@@ -1,27 +1,24 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { AlertCircle, Loader2 } from "lucide-react";
-import { useSignUp, useSignIn } from "@/lib/api";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { AlertCircle, Loader2, ArrowRight } from "lucide-react";
+import { useSignUp } from "@/lib/api";
+import { SetuLogo } from "@/components/ui/setu-logo";
 
 export function SignUp() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const signUpMutation = useSignUp();
-  const signInMutation = useSignIn();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!email || !password) {
-      setErrorMessage("Please fill in all fields.");
+    const cleanEmail = email.trim();
+    if (!cleanEmail || !password) {
+      setErrorMessage("Please fill in both email and password.");
       return;
     }
 
@@ -30,123 +27,116 @@ export function SignUp() {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
-      return;
-    }
-
     try {
-      await signUpMutation.mutateAsync({ email, password });
-      try {
-        await signInMutation.mutateAsync({ email, password });
-        navigate("/dashboard");
-      } catch {
-        navigate("/signin");
-      }
+      await signUpMutation.mutateAsync({ email: cleanEmail, password });
+      navigate("/dashboard");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setErrorMessage(err.message || "Failed to create account. Email may already be in use.");
       } else {
-        setErrorMessage("An error occurred during signup.");
+        setErrorMessage("An unexpected error occurred during signup.");
       }
     }
   };
 
-  const isSubmitting = signUpMutation.isPending || signInMutation.isPending;
+  const isSubmitting = signUpMutation.isPending;
 
   return (
-    <div className="min-h-screen bg-zinc-50/60 flex flex-col justify-center items-center px-4 font-sans text-zinc-900">
+    <div className="min-h-screen bg-black text-white flex flex-col justify-center items-center px-4 font-mono select-none selection:bg-white selection:text-black">
       <div className="w-full max-w-sm">
-        {/* Brand Text Header (No logo icon) */}
         <div className="mb-6 text-center">
-          <Link to="/" className="font-semibold text-sm tracking-tight text-zinc-950 hover:opacity-80 transition-opacity">
-            OpenRouter
+          <Link to="/" className="inline-flex items-center gap-2 group mb-3">
+            <div className="p-1 border border-zinc-800 bg-zinc-950 group-hover:border-zinc-600 transition-colors flex items-center justify-center rounded-none">
+              <SetuLogo size={18} className="text-white" />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-white font-['Space_Grotesk']">
+              SETU
+            </span>
           </Link>
-          <h1 className="text-xl font-bold tracking-tight text-zinc-950 mt-3">Create account</h1>
-          <p className="text-xs text-zinc-500 mt-1">Get 1,000 free starter credits upon registration.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white font-['Space_Grotesk'] uppercase mt-1">
+            Create Account
+          </h1>
+          <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 border border-zinc-800 bg-zinc-950 text-[11px] text-zinc-300 rounded-none">
+            <span className="size-1.5 bg-emerald-400" />
+            <span>Includes 1,000 Free Starter Credits</span>
+          </div>
         </div>
 
-        {/* Card */}
-        <div className="bg-white border border-zinc-200 rounded-lg p-6 shadow-xs">
+        <div className="border border-zinc-800 bg-zinc-950 p-6 rounded-none shadow-[0_0_50px_rgba(0,0,0,0.8)]">
           {errorMessage && (
-            <div className="mb-4 flex items-center gap-2 p-2.5 rounded-md bg-red-50 border border-red-200 text-red-700 text-xs">
-              <AlertCircle className="size-3.5 shrink-0 text-red-600" />
+            <div className="mb-4 flex items-center gap-2 p-2.5 bg-red-950/40 border border-red-800 text-red-300 text-xs rounded-none">
+              <AlertCircle className="size-3.5 shrink-0 text-red-400" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="signup-email" className="text-xs font-medium text-zinc-700">
-                Email
-              </Label>
-              <Input
+              <label htmlFor="signup-email" className="text-[11px] uppercase tracking-wider text-zinc-400 block font-medium">
+                Email Address
+              </label>
+              <input
                 id="signup-email"
                 type="email"
-                placeholder="name@example.com"
+                placeholder="developer@domain.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-white border-zinc-200 text-xs text-zinc-900 h-8 rounded-md"
+                autoFocus
+                className="w-full h-9 border border-zinc-800 bg-black text-xs text-white placeholder:text-zinc-600 font-mono px-3 rounded-none focus:border-white focus:outline-hidden"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="signup-password" className="text-xs font-medium text-zinc-700">
-                Password
-              </Label>
-              <Input
+              <div className="flex items-center justify-between">
+                <label htmlFor="signup-password" className="text-[11px] uppercase tracking-wider text-zinc-400 block font-medium">
+                  Password
+                </label>
+                <span className="text-[10px] text-zinc-600 uppercase">Min. 6 chars</span>
+              </div>
+              <input
                 id="signup-password"
                 type="password"
-                placeholder="Min. 6 characters"
+                placeholder="Create a secure password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-white border-zinc-200 text-xs text-zinc-900 h-8 rounded-md"
+                className="w-full h-9 border border-zinc-800 bg-black text-xs text-white placeholder:text-zinc-600 font-mono px-3 rounded-none focus:border-white focus:outline-hidden"
               />
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="confirm-password" className="text-xs font-medium text-zinc-700">
-                Confirm Password
-              </Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                placeholder="Re-enter password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className="bg-white border-zinc-200 text-xs text-zinc-900 h-8 rounded-md"
-              />
-            </div>
-
-            <Button
+            <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-zinc-900 hover:bg-zinc-800 text-white text-xs h-8 rounded-md shadow-none font-medium mt-1"
+              className="w-full h-10 mt-2 bg-white text-black hover:bg-zinc-200 border border-white text-xs font-mono font-bold uppercase tracking-wider rounded-none transition-colors cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {isSubmitting ? (
-                <Loader2 className="size-3.5 animate-spin mx-auto" />
+                <>
+                  <Loader2 className="size-3.5 animate-spin" />
+                  <span>INITIALIZING ACCOUNT...</span>
+                </>
               ) : (
-                "Create Account"
+                <>
+                  <span>Initialize & Launch Console</span>
+                  <ArrowRight className="size-3.5" />
+                </>
               )}
-            </Button>
+            </button>
           </form>
 
-          <div className="mt-5 pt-4 border-t border-zinc-100 text-center">
-            <p className="text-xs text-zinc-500">
-              Already have an account?{" "}
-              <Link to="/signin" className="text-zinc-900 font-semibold hover:underline">
-                Sign in
+          <div className="mt-5 pt-4 border-t border-zinc-900 text-center">
+            <p className="text-xs text-zinc-500 font-mono">
+              Already registered?{" "}
+              <Link to="/signin" className="text-white font-bold hover:underline ml-1">
+                SIGN IN
               </Link>
             </p>
           </div>
         </div>
 
         <div className="mt-6 text-center">
-          <Link to="/" className="text-xs text-zinc-400 hover:text-zinc-600">
-            &larr; Back to homepage
+          <Link to="/" className="text-xs font-mono text-zinc-500 hover:text-zinc-300 uppercase tracking-wider">
+            &larr; Return to gateway homepage
           </Link>
         </div>
       </div>
