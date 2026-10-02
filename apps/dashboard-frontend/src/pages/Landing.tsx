@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import { Copy, ArrowRight } from "lucide-react";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { StarsBackground } from "@/components/ui/stars-background";
+import { SetuLogo } from "@/components/ui/setu-logo";
 
 export function Landing() {
   const [copied, setCopied] = useState(false);
@@ -42,14 +43,18 @@ export function Landing() {
       <header className="relative z-10 h-16 px-6 sm:px-10 border-b border-zinc-800 bg-black/90 flex items-center justify-between shrink-0">
         {/* SETU Branding - Bold, Visible, High Contrast */}
         <div className="flex items-center gap-3">
-          <div className="size-2 bg-white" />
-          <Link to="/" className="flex items-center gap-2.5">
-            <span className="text-xl font-bold tracking-tight text-white font-['Space_Grotesk']">
-              SETU
-            </span>
-            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-l border-zinc-800 pl-2.5 hidden sm:inline">
-              AI BRIDGE // 01
-            </span>
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="p-1 border border-zinc-800 bg-zinc-950 group-hover:border-zinc-700 transition-colors flex items-center justify-center">
+              <SetuLogo size={20} className="text-white" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-bold tracking-tight text-white font-['Space_Grotesk']">
+                SETU
+              </span>
+              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border-l border-zinc-800 pl-2 hidden sm:inline">
+                AI BRIDGE // 01
+              </span>
+            </div>
           </Link>
         </div>
 
@@ -121,7 +126,8 @@ export function Landing() {
 
       {/* Fixed Bottom Bar - Single Page Docked Footer */}
       <footer className="relative z-10 h-14 px-6 sm:px-10 border-t border-zinc-800 bg-black/90 flex items-center justify-between text-xs font-mono text-zinc-500 shrink-0">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <SetuLogo size={16} className="text-white" />
           <span className="text-white font-bold tracking-wider font-['Space_Grotesk'] text-sm">
             SETU
           </span>
