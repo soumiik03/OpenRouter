@@ -10,8 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.post("/api/v1/chat/completions", async (req, res) => {
-  const auth =
-    req.headers.authorization || (req.headers["x-api-key"] as string) || "";
+  const auth =req.headers.authorization || (req.headers["x-api-key"] as string) || "";
   const apiKey = auth.replace(/^Bearer\s+/i, "").trim();
 
   const apiKeyDb = await prisma.apiKey.findFirst({
